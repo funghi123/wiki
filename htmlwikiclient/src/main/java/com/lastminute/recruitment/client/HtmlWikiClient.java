@@ -1,12 +1,15 @@
 package com.lastminute.recruitment.client;
 
-import java.util.Objects;
+import com.lastminute.recruitment.domain.error.WikiPageNotFound;
+
+import java.net.URL;
+import java.util.Optional;
 
 public class HtmlWikiClient {
 
-    public String readHtml(String link) {
+    public URL readHtml(String link) { // changed to return an URL as I'm currently using Windows
         String name = link.replace("\"", "")
                 .replace("http://wikiscrapper.test/", "/wikiscrapper/") + ".html";
-        return Objects.requireNonNull(getClass().getResource(name)).getFile();
+        return Optional.ofNullable(getClass().getResource(name)).orElseThrow(WikiPageNotFound::new);
     }
 }

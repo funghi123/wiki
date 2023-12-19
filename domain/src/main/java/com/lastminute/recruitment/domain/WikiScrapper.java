@@ -1,4 +1,7 @@
-package com.lastminute.recruitment.domain;
+    package com.lastminute.recruitment.domain;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class WikiScrapper {
 
@@ -10,9 +13,20 @@ public class WikiScrapper {
         this.repository = repository;
     }
 
-
     public void read(String link) {
-
+        visit(wikiReader.read(link), new HashSet<>());
     }
 
+    private void visit(WikiPage wikiPage, Set<String> alreadyVisited) {
+        alreadyVisited.add(wikiPage.getSelfLink());
+        repository.save(wikiPage);
+        visitChildren(wikiPage, alreadyVisited);
+    }
+
+    private void visitChildren(WikiPage wikiPage, Set<String> alreadyVisited) {
+        wikiPage.getLinks()
+                .stream()
+                .filter(link -> !alreadyVisited.contains(link))
+                .forEach(link -> visit(wikiReader.read(link), alreadyVisited));
+    }
 }
